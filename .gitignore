@@ -2,6 +2,7 @@ tmp
 data
 hosts
 *.log
+*.json
 *.xrun.*
 
 # Byte-compiled / optimized / DLL files

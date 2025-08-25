@@ -86,16 +86,19 @@ def remove_comments(proof):
     return re.sub(" +--.*", "", proof)
 
 def extract_proof(llm_output):
+    code_delimiters = re.findall(r'```', llm_output)
+    if len(code_delimiters) < 2:
+        return ''
     proof = []
     in_proof = False
-    for l in llm_output.splitlines():
+    for l in reversed(llm_output.splitlines()):
         if '```' in l and in_proof:
             break
         if in_proof:
             proof.append(l)
         if '```' in l:
             in_proof = True
-    return '\n'.join(proof).strip()
+    return '\n'.join(reversed(proof)).strip()
 
 
 if __name__ == "__main__":
