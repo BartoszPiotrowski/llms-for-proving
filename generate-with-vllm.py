@@ -38,7 +38,7 @@ def generate(args):
         print('END OF CANDIDATES')
         print('-' * 80, flush=True)
         proof_dicts.append({'statement': statement, 'proofs': proofs})
-    with open(args.output) as f:
+    with open(args.output, 'w') as f:
         json.dump(proof_dicts, f)
     print('DONE')
 
