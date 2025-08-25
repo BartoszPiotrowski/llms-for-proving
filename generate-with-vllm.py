@@ -28,7 +28,7 @@ def generate(args):
         include_stop_str_in_output=False,
     )
     outputs = model.generate(input_prompts, sampling_params)
-    proofs_dict = []
+    proof_dicts = []
     for output, statement in zip(outputs, statements):
         responses = [o.text for o in output.outputs]
         proofs = [extract_proof(r) for r in responses]
@@ -37,9 +37,9 @@ def generate(args):
             print(f'CANDIDATE RESPONSE: {r}')
         print('END OF CANDIDATES')
         print('-' * 80, flush=True)
-        proofs_dict.append({'statement': statement, 'proofs': proofs})
+        proof_dicts.append({'statement': statement, 'proofs': proofs})
     with open(args.output) as f:
-        json.dump(f)
+        json.dump(proof_dicts, f)
     print('DONE')
 
 
