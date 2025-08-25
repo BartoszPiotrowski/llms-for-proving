@@ -5,6 +5,7 @@ import json
 from vllm import LLM, SamplingParams
 
 import prompts
+from utils import extract_proof, log_args
 
 
 def generate(args):
@@ -27,24 +28,19 @@ def generate(args):
         include_stop_str_in_output=False,
     )
     outputs = model.generate(input_prompts, sampling_params)
-    #passes = []
+    proofs_dict = []
     for output, statement in zip(outputs, statements):
         responses = [o.text for o in output.outputs]
-        #final_answers = [extract_final_answer(o) for o in responses]
-        final_answers = responses
-        #correct = []
+        proofs = [extract_proof(r) for r in responses]
         print(f'INPUT STATEMENT: {statement}')
-        for a in final_answers:
-            print(f'CANDIDATE PROOF: {a}')
-            #correct.append(evaluate(statement, a))
-        #passed = sum(correct) > 0
-        #print(f'PASS: {passed}')
+        for r in responses:
+            print(f'CANDIDATE RESPONSE: {r}')
         print('END OF CANDIDATES')
         print('-' * 80, flush=True)
-        #passes.append(passed)
-    #pass_rate = sum(passes) / len(passes)
+        proofs_dict.append({'statement': statement, 'proofs': proofs})
+    with open(args.output) as f:
+        json.dump(f)
     print('DONE')
-    #print(f'PASS RATE: {sum(passes)} / {len(passes)} = {pass_rate}')
 
 
 if __name__ == "__main__":
@@ -57,8 +53,9 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--gpu_memory_utilization", type=float, default=0.9)
     parser.add_argument("--swap_space", type=float, default=4)
+    parser.add_argument("--output", type=str)
     args = parser.parse_args()
     if args.tokenizer is None:
         args.tokenizer = args.model
-    #log_args(args)
+    log_args(args)
     generate(args)
