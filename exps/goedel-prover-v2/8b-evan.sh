@@ -3,5 +3,5 @@
     --model Goedel-LM/Goedel-Prover-V2-8B \
     --dataset data/lean-ineq-evan.json \
     --prompt_template prove \
-    --n 4 \
+    --n 16 \
     --output ${0%.*}.json
