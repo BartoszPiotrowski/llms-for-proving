@@ -1,0 +1,3 @@
+see the end of:
+jq . exps/goedel-prover-v2/8b-kiran.json|rg sorry
+some statements false?

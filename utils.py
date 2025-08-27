@@ -100,6 +100,20 @@ def extract_proof(llm_output):
             in_proof = True
     return '\n'.join(reversed(proof)).strip()
 
+imports='''
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+'''
+
+def preprocess_proof(proof):
+    if not proof or re.search(r'\bsorry\b', proof):
+        return None
+    return '\n'.join([imports, proof])
+
 
 if __name__ == "__main__":
 

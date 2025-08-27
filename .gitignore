@@ -3,6 +3,8 @@ data
 hosts
 *.log
 *.json
+*.lean
+*.err
 *.xrun.*
 
 # Byte-compiled / optimized / DLL files
