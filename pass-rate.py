@@ -25,6 +25,8 @@ def check(proofs):
 
 if __name__ == '__main__':
     proofs = [json.loads(l) for l in open(sys.argv[1])]
+    with open(sys.argv[1]) as f:
+        proofs = json.load(f)
     with multiprocessing.Pool(processes=PROCESSES) as pool:
         passed = list(pool.map(check, proofs))
         print(f'Pass rate: {sum(passed) / len(passed)} = {sum(passed)} / {len(passed)}')
