@@ -19,14 +19,14 @@ def check(proofs):
     for i, proof in enumerate(proofs):
         proof = preprocess_proof(proof)
         if not proof:
-            return 0, None
+            return -1, None
         correct, msg, err = lean_eval(proof, LEAN_DIR)
         if correct:
-            print(f'\033[32mStatement {n}: proof {i + 1} correct!\033[0m')
-            return i + 1, proof
+            print(f'\033[32mStatement {n}: proof {i} correct!\033[0m')
+            return i, proof
         print(f'Proof incorrect.\n\n--- Proof ---{proof}\n\n--- Lean stdout ---\n{msg}\n\n--- Lean stderr ---\n{err}\n', file=sys.stderr)
     print(f'\033[31mStatement {n}: all proofs incorrect.\033[0m')
-    return 0, None
+    return -1, None
 
 if __name__ == '__main__':
     proofs_path = sys.argv[1]
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     max_pow = ceil(log(max(passed_indices), 2))
     for i in range(max_pow + 1):
         k = 2 ** i
-        passed = [p and p <= k for p in passed_indices]
+        passed = [-1 < p < k for p in passed_indices]
         print(f'Pass@{k:<2}: {(sum(passed) / len(passed)):.3f} = {sum(passed)} / {len(passed)}')
     correct_proofs_path = proofs_path.replace('.json','') + '-correct.lean'
     correct_proofs = [p for p in correct_proofs if p]

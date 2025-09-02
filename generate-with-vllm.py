@@ -20,6 +20,7 @@ def generate(args):
         gpu_memory_utilization=args.gpu_memory_utilization,
         swap_space=args.swap_space,
         max_model_len=args.max_model_len,
+        data_parallel_size=args.data_parallel_size,
     )
     sampling_params = SamplingParams(
         n=args.n,
@@ -54,6 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--gpu_memory_utilization", type=float, default=0.9)
     parser.add_argument("--max_model_len", type=int, default=30000)
+    parser.add_argument("--data_parallel_size", type=int, default=1)
     parser.add_argument("--swap_space", type=float, default=4)
     parser.add_argument("--output", type=str)
     args = parser.parse_args()
