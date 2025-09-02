@@ -4,5 +4,5 @@
     --dataset data/lean-ineq-book567.json \
     --prompt_template prove \
     --n 16 \
-    --data_parallel_size 4 \
+    --data_parallel_size 1 \
     --output ${0%.*}.json
