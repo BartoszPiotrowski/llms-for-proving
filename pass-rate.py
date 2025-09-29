@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 import json
 import concurrent.futures
 import multiprocessing
+import re
 
 from utils import lean_eval, preprocess_proof
 from math import log, ceil, inf
 
-#LEAN_DIR = "/Users/bpio/Research/Code/Bartosz/mathlib-4-20"
-LEAN_DIR = "/Users/bpio/Research/Code/Public/Lean-Inequality-Benchmark"
-PROCESSES = 12
+LEAN_DIR = "/Users/bpio/Research/Code/Bartosz/mathlib-4-11"
+#LEAN_DIR = "/Users/bpio/Research/Code/Public/Lean-Inequality-Benchmark"
+PROCESSES = 6
 
 
 def check(proofs):
@@ -35,13 +37,20 @@ if __name__ == '__main__':
         proofs = json.load(f)
     with multiprocessing.Pool(processes=PROCESSES) as pool:
         passed_indices, correct_proofs = zip(*pool.map(check, enumerate(proofs)))
-    max_pow = ceil(log(max(passed_indices), 2))
+    max_pow = ceil(log(max(passed_indices), 2)) + 1
+    print(f'max_pow {max_pow}')
     for i in range(max_pow + 1):
         k = 2 ** i
         passed = [-1 < p < k for p in passed_indices]
         print(f'Pass@{k:<2}: {(sum(passed) / len(passed)):.3f} = {sum(passed)} / {len(passed)}')
-    correct_proofs_path = proofs_path.replace('.json','') + '-correct.lean'
     correct_proofs = [p for p in correct_proofs if p]
-    with open(correct_proofs_path, 'w') as f:
-        f.write('\n'.join(correct_proofs) + '\n')
-    print(f'Correct proofs saved to {correct_proofs_path}')
+    if correct_proofs:
+        correct_proofs_path = os.path.join(LEAN_DIR, os.path.basename(
+            proofs_path.replace('.json','') + '.lean'))
+        imports = '\n'.join([l for l in correct_proofs[0].splitlines() if 'import ' in l])
+        correct_proofs = [re.sub(r'^import .*\n', '', p, flags=re.M) for p in correct_proofs]
+        with open(correct_proofs_path, 'w') as f:
+            f.write('\n'.join([imports] + correct_proofs) + '\n')
+        print(f'Correct proofs saved to {correct_proofs_path}')
+    else:
+        print(f'No correct proofs to save...')

@@ -9,8 +9,9 @@ from utils import extract_proof, log_args
 
 
 def generate(args):
-    with open(args.dataset) as f:
-        statements = json.load(f)
+    examples = [json.loads(l) for l in open(args.dataset)]
+    statements = [e['statement'] for e in examples]
+    ids = [e['id'] for e in examples]
     prompt_template = getattr(prompts, args.prompt_template)
     input_prompts = [prompt_template.format(x=s) for s in statements]
     print(f"Initializing with model {args.model} and {args.tokenizer}")
@@ -31,15 +32,10 @@ def generate(args):
     )
     outputs = model.generate(input_prompts, sampling_params)
     proof_dicts = []
-    for output, statement in zip(outputs, statements):
+    for id, output, statement in zip(ids, outputs, statements):
         responses = [o.text for o in output.outputs]
         proofs = [extract_proof(r) for r in responses]
-        print(f'INPUT STATEMENT: {statement}')
-        for r in responses:
-            print(f'CANDIDATE RESPONSE: {r}')
-        print('END OF CANDIDATES')
-        print('-' * 80, flush=True)
-        proof_dicts.append({'statement': statement, 'proofs': proofs})
+        proof_dicts.append({'id': id, 'statement': statement, 'proofs': proofs})
     with open(args.output, 'w') as f:
         json.dump(proof_dicts, f)
     print('DONE')
