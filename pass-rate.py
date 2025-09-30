@@ -37,7 +37,8 @@ if __name__ == '__main__':
         proofs = json.load(f)
     with multiprocessing.Pool(processes=PROCESSES) as pool:
         passed_indices, correct_proofs = zip(*pool.map(check, enumerate(proofs)))
-    max_pow = ceil(log(max(passed_indices), 2)) + 1
+    #max_pow = ceil(log(max(passed_indices), 2)) + 1
+    max_pow = 5
     print(f'max_pow {max_pow}')
     for i in range(max_pow + 1):
         k = 2 ** i

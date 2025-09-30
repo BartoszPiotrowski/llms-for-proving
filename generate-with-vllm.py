@@ -35,6 +35,7 @@ def generate(args):
     for id, output, statement in zip(ids, outputs, statements):
         responses = [o.text for o in output.outputs]
         proofs = [extract_proof(r) for r in responses]
+        responses = [{'full_response': r, 'proof', p} for r, p in responses, proofs]
         proof_dicts.append({'id': id, 'statement': statement, 'proofs': proofs})
     with open(args.output, 'w') as f:
         json.dump(proof_dicts, f)
