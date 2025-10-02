@@ -2,6 +2,7 @@
 
 import argparse
 import json
+from tqdm import tqdm
 from vllm import LLM, SamplingParams
 
 import prompts
@@ -30,7 +31,7 @@ def generate(args):
     )
     example_chunks = chunk(examples, args.chunk_size)
     with open(args.output, 'w') as f:
-        for examples_chunk in example_chunks:
+        for examples_chunk in tqdm(example_chunks):
             statements = [e['statement'] for e in examples_chunk]
             input_prompts = [prompt_template.format(x=s) for s in statements]
             outputs = model.generate(input_prompts, sampling_params)
