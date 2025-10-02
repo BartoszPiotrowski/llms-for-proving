@@ -29,19 +29,17 @@ def generate(args):
         include_stop_str_in_output=False,
     )
     example_chunks = chunk(examples, args.chunk_size)
-    for examples_chunk in example_chunks:
-        ids = [e['id'] for e in examples_chunk]
-        statements = [e['statement'] for e in examples_chunk]
-        input_prompts = [prompt_template.format(x=s) for s in statements]
-        outputs = model.generate(input_prompts, sampling_params)
-        proof_dicts = []
-        for id, output, statement in zip(ids, outputs, statements):
-            responses = [o.text for o in output.outputs]
-            proofs = [extract_proof(r) for r in responses]
-            responses = [{'full_response': r, 'proof': p} for r, p in zip(responses, proofs)]
-            proof_dicts.append({'id': id, 'statement': statement, 'proofs': proofs})
-        with open(args.output, 'a') as f:
-            print(json.dumps(proof_dicts), file=f)
+    with open(args.output, 'w') as f:
+        for examples_chunk in example_chunks:
+            statements = [e['statement'] for e in examples_chunk]
+            input_prompts = [prompt_template.format(x=s) for s in statements]
+            outputs = model.generate(input_prompts, sampling_params)
+            for example, output in zip(examples_chunk, outputs):
+                responses = [{'full_response': o.text,
+                              'proof': extract_proof(o.text)} \
+                                      for o in output.outputs]
+                example['responses'] = responses
+                f.write(json.dumps(example) + '\n')
     print('DONE')
 
 
@@ -63,6 +61,4 @@ if __name__ == "__main__":
     if args.tokenizer is None:
         args.tokenizer = args.model
     log_args(args)
-    if args.output:  # erase output file if exists
-        open(args.output, "w").close()
     generate(args)
