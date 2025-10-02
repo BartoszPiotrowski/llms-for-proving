@@ -5,4 +5,4 @@
     --prompt_template prove \
     --n 4 \
     --chunk_size 10 \
-    --output ${0%.*}.json
+    --output ${0%.*}.jsonl
