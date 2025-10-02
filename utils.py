@@ -114,6 +114,19 @@ def preprocess_proof(proof):
         return None
     return '\n'.join([imports, proof])
 
+def chunk(l, chunk_size):
+    chunks = []
+    while len(l) > chunk_size:
+        c, r = l[:chunk_size], l[chunk_size:]
+        chunks.append(c)
+        l = r
+    if len(l) > int(chunk_size / 3):
+        chunks.append(l)
+    else:
+        chunks[-1].extend(l)
+    return chunks
+
+
 
 if __name__ == "__main__":
 
